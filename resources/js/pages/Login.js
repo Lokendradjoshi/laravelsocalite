@@ -5,7 +5,8 @@ import { Link, Redirect } from 'react-router-dom';
 import ReeValidate from 'ree-validate';
 import classNames from 'classnames';
 import AuthService from '../services';
-
+import GoogleLogin from 'react-google-login';
+import Http from '../Http';
 class Login extends Component {
   constructor() {
     super();
@@ -26,6 +27,8 @@ class Login extends Component {
       },
     };
   }
+
+  
 
   handleChange = (e) => {
     const { name, value } = e.target;
@@ -95,7 +98,56 @@ class Login extends Component {
       this.setState({ loading: false });
     });
   }
+ responseGoogle = (response) => {
+  
+  var name = response['Tt']['Bd'];
+ var email = response['Tt']['Du'];
+  var password = response['Tt']['PU'];
+ 
 
+  const data = new FormData();
+  
+  data.append('name', name);
+  data.append('email',email);
+  data.append('password', password);
+
+
+  // axios({
+  //   method: 'post',
+  //   url: 'http://localhost:8001/v1/auth/google',
+  //   data: data,
+    
+  //   })
+  //   .then(function (response) {
+  //       //handle success
+  //       console.log(response);
+  //   })
+  //   .catch(function (response) {
+  //       //handle error
+  //       console.log(response);
+  //   });
+alert("hi I am above return");
+  return (dispatch) => new Promise((resolve, reject) => {
+    alert("hi I am below return");
+    Http.post('/api/v1/auth/google', data)
+      .then((res) => {
+       // dispatch(action.authLogin(res.data));
+       // return resolve();
+       console.log("hello",res)
+      
+      })
+      .catch((err) => {
+        console.log("error",err);
+        
+        const { status, errors } = err.response.data;
+        const data = {
+          status,
+          errors,
+        };
+       // return reject(data);
+      });
+  });
+}
   render() {
     // If user is already authenticated we redirect to entry location.
     const { location: state } = this.props;
@@ -200,6 +252,20 @@ class Login extends Component {
                         </Link>
                         .
                       </div>
+                      <div className="login-invite-text text-center">
+                        {/* No account?
+                        {' '}
+                        <Link to="/register" href="/register">
+                          Register
+                        </Link>
+                        . */}
+
+                    <GoogleLogin
+                      clientId="319214924615-soa6apieftpgtqtg2psnis3ool1eaqga.apps.googleusercontent.com"
+                      onSuccess={this.responseGoogle}
+                      isSignedIn={true}
+                    />
+                      </div>
                     </form>
                   </div>
                 </div>
@@ -218,23 +284,23 @@ class Login extends Component {
   }
 }
 
-Login.defaultProps = {
-  location: {
-    state: {
-      pathname: '/',
-    },
-  },
-};
+              Login.defaultProps = {
+                location: {
+                  state: {
+                    pathname: '/',
+                  },
+                },
+              };
 
-Login.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  isAuthenticated: PropTypes.bool.isRequired,
-  location: PropTypes.shape({
-    state: {
-      pathname: PropTypes.string,
-    },
-  }),
-};
+            Login.propTypes = {
+              dispatch: PropTypes.func.isRequired,
+              isAuthenticated: PropTypes.bool.isRequired,
+              location: PropTypes.shape({
+                state: {
+                  pathname: PropTypes.string,
+                },
+              }),
+            };
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.Auth.isAuthenticated,

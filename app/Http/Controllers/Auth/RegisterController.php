@@ -59,4 +59,11 @@ class RegisterController extends APIController
             'password' => Hash::make($data['password']),
         ]);
     }
+
+    public function google(Request $request)
+    {
+        echo  "hello world";
+        exit;
+        dd($request);
+    }
 }

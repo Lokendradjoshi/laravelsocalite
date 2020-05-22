@@ -22,6 +22,8 @@ Route::group([
     Route::post('register', 'Auth\RegisterController@register');
     Route::post('forgot-password', 'Auth\ForgotPasswordController@email');
     Route::post('password-reset', 'Auth\ResetPasswordController@reset');
+    Route::post('google', 'Auth\RegisterController@google');
+
 });
 
 // Resource Endpoints
